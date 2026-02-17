@@ -103,22 +103,36 @@ class ServicoPagamentoImpl(
 
     private fun validarTransicao(atual: StatusPagamento, proximo: StatusPagamento) {
         val permitidos = when (atual) {
+
             StatusPagamento.CRIADO ->
-                setOf(StatusPagamento.AUTORIZADO, StatusPagamento.CANCELADO, StatusPagamento.FALHOU)
+                setOf(
+                    StatusPagamento.AUTORIZADO,
+                    StatusPagamento.CANCELADO,
+                    StatusPagamento.FALHOU
+                )
 
             StatusPagamento.AUTORIZADO ->
-                setOf(StatusPagamento.CAPTURADO, StatusPagamento.CANCELADO, StatusPagamento.FALHOU)
+                setOf(
+                    StatusPagamento.CAPTURADO,
+                    StatusPagamento.CANCELADO,
+                    StatusPagamento.FALHOU
+                )
 
-            StatusPagamento.CAPTURADO,
+            // pagamento já cobrado → só pode estornar
+            StatusPagamento.CAPTURADO ->
+                setOf(StatusPagamento.ESTORNADO)
+
             StatusPagamento.CANCELADO,
-            StatusPagamento.FALHOU -> emptySet()
+            StatusPagamento.FALHOU,
+            StatusPagamento.ESTORNADO ->
+                emptySet()
         }
 
         if (proximo !in permitidos) {
-            // aqui é regra de negócio (não é 404)
             throw ExcecaoRegraNegocio("Transição inválida: $atual -> $proximo")
         }
     }
+
 
     private fun Pagamento.paraResposta(): RespostaPagamento =
         RespostaPagamento(

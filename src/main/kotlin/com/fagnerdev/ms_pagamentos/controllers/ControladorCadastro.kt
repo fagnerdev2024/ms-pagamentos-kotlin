@@ -27,17 +27,14 @@ class ControladorCadastro(
 ) {
 
     @PostMapping("/clientes")
-    fun criarCliente(
-        @Valid @RequestBody req: RequisicaoCriarCliente,
-        uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaCliente> {
-        if (repositorioCliente.existsByEmail(req.email)) {
+    fun criarCliente(@Valid @RequestBody requisicaoCriarCliente: RequisicaoCriarCliente, uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<RespostaCliente> {
+        if (repositorioCliente.existsByEmail(requisicaoCriarCliente.email)) {
             throw ExcecaoRegraNegocio("Email já cadastrado")
         }
 
-        val salvo = repositorioCliente.save(Clientes(nome = req.nome, email = req.email))
+        val salvo = repositorioCliente.save(Clientes(nome = requisicaoCriarCliente.nome, email = requisicaoCriarCliente.email))
 
-        val location = uriBuilder
+        val location = uriComponentsBuilder
             .path("/api/cadastros/clientes/{id}")
             .buildAndExpand(salvo.id)
             .toUri()
@@ -52,19 +49,14 @@ class ControladorCadastro(
     }
 
     @PostMapping("/estabelecimentos")
-    fun criarEstabelecimento(
-        @Valid @RequestBody req: RequisicaoCriarEstabelecimento,
-        uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaEstabelecimento> {
-        if (repositorioEstabelecimento.existsByDocumento(req.documento)) {
+    fun criarEstabelecimento(@Valid @RequestBody requisicaoCriarEstabelecimento: RequisicaoCriarEstabelecimento, uriComponentsBuilder: UriComponentsBuilder): ResponseEntity<RespostaEstabelecimento> {
+        if (repositorioEstabelecimento.existsByDocumento(requisicaoCriarEstabelecimento.documento)) {
             throw ExcecaoRegraNegocio("Documento já cadastrado")
         }
 
-        val salvo = repositorioEstabelecimento.save(
-            Estabelecimento(razaoSocial = req.razaoSocial, documento = req.documento)
-        )
+        val salvo = repositorioEstabelecimento.save(Estabelecimento(razaoSocial = requisicaoCriarEstabelecimento.razaoSocial, documento = requisicaoCriarEstabelecimento.documento))
 
-        val location = uriBuilder
+        val location = uriComponentsBuilder
             .path("/api/cadastros/estabelecimentos/{id}")
             .buildAndExpand(salvo.id)
             .toUri()

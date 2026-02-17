@@ -1,7 +1,7 @@
 package com.fagnerdev.ms_pagamentos.exceptions
 
 
-
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -61,4 +61,21 @@ class TratadorGlobalErros {
         )
         return ResponseEntity.status(status).body(body)
     }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun tratarMetodoNaoSuportado(
+        ex: HttpRequestMethodNotSupportedException,
+        req: jakarta.servlet.http.HttpServletRequest
+    ): org.springframework.http.ResponseEntity<ErroApi> =
+        construir(
+            status = org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED,
+            mensagem = "Método HTTP não suportado para este endpoint",
+            caminho = req.requestURI,
+            detalhes = mapOf(
+                "metodoRecebido" to ex.method,
+                "metodosPermitidos" to (ex.supportedHttpMethods?.map(Any::toString) ?: emptyList<String>())
+            )
+        )
+
+
 }

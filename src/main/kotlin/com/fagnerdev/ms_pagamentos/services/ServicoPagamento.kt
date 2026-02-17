@@ -1,5 +1,7 @@
 package com.fagnerdev.ms_pagamentos.services
 
+
+
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoAlterarStatusPagamento
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarPagamento
 import com.fagnerdev.ms_pagamentos.dtos.RespostaPagamento
@@ -7,15 +9,13 @@ import com.fagnerdev.ms_pagamentos.entidades.EventoPagamento
 import com.fagnerdev.ms_pagamentos.entidades.Pagamento
 import com.fagnerdev.ms_pagamentos.entidades.StatusPagamento
 import com.fagnerdev.ms_pagamentos.exceptions.ExcecaoNaoEncontrado
-import com.fagnerdev.ms_pagamentos.exceptions.ExcecaoRegraNegocio
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioCliente
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioEstabelecimento
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioEventoPagamento
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioPagamento
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.util.UUID
-
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class ServicoPagamento(
@@ -27,18 +27,18 @@ class ServicoPagamento(
 
     @Transactional
     fun criar(requisicao: RequisicaoCriarPagamento): RespostaPagamento {
-        val cliente = repositorioCliente.findById(requisicao.clienteId!!)
+        val cliente = repositorioCliente.findById(requisicao.clienteId)
             .orElseThrow { ExcecaoNaoEncontrado("Cliente ${requisicao.clienteId} não encontrado") }
 
-        val estabelecimento = repositorioEstabelecimento.findById(requisicao.estabelecimentoId!!)
+        val estabelecimento = repositorioEstabelecimento.findById(requisicao.estabelecimentoId)
             .orElseThrow { ExcecaoNaoEncontrado("Estabelecimento ${requisicao.estabelecimentoId} não encontrado") }
 
         val pagamento = Pagamento(
             clientes = cliente,
             estabelecimento = estabelecimento,
-            valor = requisicao.valor!!,
-            moeda = requisicao.moeda!!.uppercase(),
-            meio = requisicao.meio!!,
+            valor = requisicao.valor,
+            moeda = requisicao.moeda.uppercase(),
+            meio = requisicao.meio,
             status = StatusPagamento.CRIADO
         )
 
@@ -46,10 +46,11 @@ class ServicoPagamento(
         repositorioEventoPagamento.save(
             EventoPagamento(pagamentoId = salvo.id, status = salvo.status, mensagem = "Pagamento criado")
         )
+
         return salvo.paraResposta()
     }
 
-    //@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     fun buscarPorId(id: UUID): RespostaPagamento =
         repositorioPagamento.findById(id)
             .orElseThrow { ExcecaoNaoEncontrado("Pagamento $id não encontrado") }
@@ -60,20 +61,20 @@ class ServicoPagamento(
         val pagamento = repositorioPagamento.findById(id)
             .orElseThrow { ExcecaoNaoEncontrado("Pagamento $id não encontrado") }
 
-        val proximo = requisicao.status!!
-        validarTransicao(pagamento.status, proximo)
+        validarTransicao(pagamento.status, requisicao.status)
 
-        pagamento.status = proximo
+        pagamento.status = requisicao.status
         pagamento.tocarAtualizacao()
 
         val salvo = repositorioPagamento.save(pagamento)
         repositorioEventoPagamento.save(
-            EventoPagamento(pagamentoId = salvo.id, status = salvo.status, mensagem = requisicao.mensagem!!)
+            EventoPagamento(pagamentoId = salvo.id, status = salvo.status, mensagem = requisicao.mensagem)
         )
+
         return salvo.paraResposta()
     }
 
-    //@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     fun linhaDoTempo(id: UUID): List<EventoPagamento> {
         if (!repositorioPagamento.existsById(id)) throw ExcecaoNaoEncontrado("Pagamento $id não encontrado")
         return repositorioEventoPagamento.findAllByPagamentoIdOrderByCriadoEmAsc(id)
@@ -89,7 +90,7 @@ class ServicoPagamento(
         }
 
         if (proximo !in permitidos) {
-            throw ExcecaoRegraNegocio("Transição inválida: $atual -> $proximo")
+            throw ExcecaoNaoEncontrado("Transição inválida: $atual -> $proximo")
         }
     }
 

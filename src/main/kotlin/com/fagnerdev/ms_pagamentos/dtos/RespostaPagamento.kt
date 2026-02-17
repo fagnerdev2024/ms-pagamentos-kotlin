@@ -19,3 +19,4 @@ data class RespostaPagamento(
     val criadoEm: OffsetDateTime,
     val atualizadoEm: OffsetDateTime
 )
+

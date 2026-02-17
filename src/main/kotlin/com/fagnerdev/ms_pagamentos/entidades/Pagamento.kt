@@ -47,6 +47,7 @@ class Pagamento(
     @Column(nullable = false)
     var atualizadoEm: OffsetDateTime = OffsetDateTime.now()
 ) {
+
     fun tocarAtualizacao() {
         atualizadoEm = OffsetDateTime.now()
     }

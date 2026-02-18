@@ -5,5 +5,6 @@ enum class StatusPagamento {
     AUTORIZADO,
     CAPTURADO,
     CANCELADO,
-    FALHOU
+    FALHOU,
+    ESTORNADO
 }

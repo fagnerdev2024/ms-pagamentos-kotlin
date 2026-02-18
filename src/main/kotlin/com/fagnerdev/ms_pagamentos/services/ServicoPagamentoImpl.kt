@@ -10,6 +10,7 @@ import com.fagnerdev.ms_pagamentos.entidades.Pagamento
 import com.fagnerdev.ms_pagamentos.entidades.StatusPagamento
 import com.fagnerdev.ms_pagamentos.exceptions.ExcecaoNaoEncontrado
 import com.fagnerdev.ms_pagamentos.exceptions.ExcecaoRegraNegocio
+import com.fagnerdev.ms_pagamentos.exceptions.TransicaoPagamentoInvalidaException
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioCliente
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioEstabelecimento
 import com.fagnerdev.ms_pagamentos.repositories.RepositorioEventoPagamento
@@ -102,23 +103,29 @@ class ServicoPagamentoImpl(
     }
 
     private fun validarTransicao(atual: StatusPagamento, proximo: StatusPagamento) {
-        val permitidos = when (atual) {
+        val permitidos = proximosPermitidos(atual)
+        if (proximo !in permitidos) {
+            throw TransicaoPagamentoInvalidaException(atual, proximo, permitidos)
+        }
+    }
+
+    private fun proximosPermitidos(atual: StatusPagamento): Set<StatusPagamento> =
+        when (atual) {
             StatusPagamento.CRIADO ->
                 setOf(StatusPagamento.AUTORIZADO, StatusPagamento.CANCELADO, StatusPagamento.FALHOU)
 
             StatusPagamento.AUTORIZADO ->
                 setOf(StatusPagamento.CAPTURADO, StatusPagamento.CANCELADO, StatusPagamento.FALHOU)
 
-            StatusPagamento.CAPTURADO,
+            StatusPagamento.CAPTURADO ->
+                setOf(StatusPagamento.ESTORNADO)
+
             StatusPagamento.CANCELADO,
-            StatusPagamento.FALHOU -> emptySet()
+            StatusPagamento.FALHOU,
+            StatusPagamento.ESTORNADO ->
+                emptySet()
         }
 
-        if (proximo !in permitidos) {
-            // aqui é regra de negócio (não é 404)
-            throw ExcecaoRegraNegocio("Transição inválida: $atual -> $proximo")
-        }
-    }
 
     private fun Pagamento.paraResposta(): RespostaPagamento =
         RespostaPagamento(

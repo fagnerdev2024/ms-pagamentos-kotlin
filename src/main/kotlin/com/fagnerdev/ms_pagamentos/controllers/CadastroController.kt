@@ -3,11 +3,11 @@ package com.fagnerdev.ms_pagamentos.controllers
 
 
 
-import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarCliente
-import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarEstabelecimento
-import com.fagnerdev.ms_pagamentos.dtos.RespostaCliente
-import com.fagnerdev.ms_pagamentos.dtos.RespostaEstabelecimento
-import com.fagnerdev.ms_pagamentos.services.ServicoCadastro
+import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarClienteDto
+import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarEstabelecimentoDto
+import com.fagnerdev.ms_pagamentos.dtos.RespostaClienteDto
+import com.fagnerdev.ms_pagamentos.dtos.RespostaEstabelecimentoDto
+import com.fagnerdev.ms_pagamentos.services.CadastroService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,17 +15,17 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/api/cadastros")
-class ControladorCadastro(
-    private val servicoCadastro: ServicoCadastro
+class CadastroController(
+    private val cadastroService: CadastroService
 ) {
 
     @PostMapping("/clientes")
     fun criarCliente(
-        @Valid @RequestBody req: RequisicaoCriarCliente,
+        @Valid @RequestBody req: RequisicaoCriarClienteDto,
         uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaCliente> {
+    ): ResponseEntity<RespostaClienteDto> {
 
-        val resposta = servicoCadastro.criarCliente(req)
+        val resposta = cadastroService.criarCliente(req)
 
         val location = uriBuilder
             .path("/api/cadastros/clientes/{id}")
@@ -37,11 +37,11 @@ class ControladorCadastro(
 
     @PostMapping("/estabelecimentos")
     fun criarEstabelecimento(
-        @Valid @RequestBody req: RequisicaoCriarEstabelecimento,
+        @Valid @RequestBody req: RequisicaoCriarEstabelecimentoDto,
         uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaEstabelecimento> {
+    ): ResponseEntity<RespostaEstabelecimentoDto> {
 
-        val resposta = servicoCadastro.criarEstabelecimento(req)
+        val resposta = cadastroService.criarEstabelecimento(req)
 
         val location = uriBuilder
             .path("/api/cadastros/estabelecimentos/{id}")

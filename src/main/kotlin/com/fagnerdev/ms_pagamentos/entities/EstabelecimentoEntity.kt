@@ -1,4 +1,4 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -10,7 +10,7 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "estabelecimentos")
-class Estabelecimento(
+class EstabelecimentoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,

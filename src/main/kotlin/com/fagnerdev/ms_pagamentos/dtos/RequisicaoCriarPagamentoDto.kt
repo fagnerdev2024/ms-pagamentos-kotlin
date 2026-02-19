@@ -2,14 +2,14 @@ package com.fagnerdev.ms_pagamentos.dtos
 
 
 
-import com.fagnerdev.ms_pagamentos.entidades.MeioPagamento
+import com.fagnerdev.ms_pagamentos.entities.MeioPagamentoEnum
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 
-data class RequisicaoCriarPagamento(
+data class RequisicaoCriarPagamentoDto(
     @field:NotNull(message = "clienteId é obrigatório")
     val clienteId: Long,
 
@@ -25,5 +25,5 @@ data class RequisicaoCriarPagamento(
     val moeda: String,
 
     @field:NotNull(message = "meio é obrigatório")
-    val meio: MeioPagamento
+    val meio: MeioPagamentoEnum
 )

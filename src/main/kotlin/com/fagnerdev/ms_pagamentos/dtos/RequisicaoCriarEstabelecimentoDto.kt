@@ -3,7 +3,7 @@ package com.fagnerdev.ms_pagamentos.dtos
 
 import jakarta.validation.constraints.NotBlank
 
-data class RequisicaoCriarEstabelecimento(
+data class RequisicaoCriarEstabelecimentoDto(
     @field:NotBlank(message = "razaoSocial é obrigatória")
     val razaoSocial: String,
 

@@ -4,7 +4,7 @@ package com.fagnerdev.ms_pagamentos.dtos
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
-data class RequisicaoCriarCliente(
+data class RequisicaoCriarClienteDto(
     @field:NotBlank(message = "nome é obrigatório")
     val nome: String,
 

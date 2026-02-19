@@ -1,6 +1,6 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
-enum class MeioPagamento {
+enum class MeioPagamentoEnum {
     CARTAO_CREDITO,
     PIX,
     BOLETO,

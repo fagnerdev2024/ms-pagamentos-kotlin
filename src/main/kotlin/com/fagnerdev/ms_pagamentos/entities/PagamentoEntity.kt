@@ -1,4 +1,4 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -15,17 +15,17 @@ import java.util.UUID
 
 @Entity
 @Table(name = "pagamentos")
-class Pagamento(
+class PagamentoEntity(
     @Id
     val id: UUID = UUID.randomUUID(),
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cliente_id", nullable = false)
-    val clientes: Clientes,
+    val clienteEntity: ClienteEntity,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "estabelecimento_id", nullable = false)
-    val estabelecimento: Estabelecimento,
+    val estabelecimentoEntity: EstabelecimentoEntity,
 
     @Column(nullable = false, precision = 19, scale = 2)
     val valor: BigDecimal,
@@ -35,11 +35,11 @@ class Pagamento(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val meio: MeioPagamento,
+    val meio: MeioPagamentoEnum,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var status: StatusPagamento = StatusPagamento.CRIADO,
+    var status: StatusPagamentoEnum = StatusPagamentoEnum.CRIADO,
 
     @Column(nullable = false)
     val criadoEm: OffsetDateTime = OffsetDateTime.now(),

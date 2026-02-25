@@ -1,8 +1,5 @@
 package com.fagnerdev.ms_pagamentos.controllers
 
-
-
-
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarClienteDto
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarEstabelecimentoDto
 import com.fagnerdev.ms_pagamentos.dtos.RespostaClienteDto
@@ -16,14 +13,11 @@ import org.springframework.web.util.UriComponentsBuilder
 @RestController
 @RequestMapping("/api/cadastros")
 class CadastroController(
-    private val cadastroService: CadastroService
-) {
+    private val cadastroService: CadastroService) {
+
 
     @PostMapping("/clientes")
-    fun criarCliente(
-        @Valid @RequestBody req: RequisicaoCriarClienteDto,
-        uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaClienteDto> {
+    fun criarCliente(@Valid @RequestBody req: RequisicaoCriarClienteDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaClienteDto> {
 
         val resposta = cadastroService.criarCliente(req)
 
@@ -36,10 +30,7 @@ class CadastroController(
     }
 
     @PostMapping("/estabelecimentos")
-    fun criarEstabelecimento(
-        @Valid @RequestBody req: RequisicaoCriarEstabelecimentoDto,
-        uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<RespostaEstabelecimentoDto> {
+    fun criarEstabelecimento(@Valid @RequestBody req: RequisicaoCriarEstabelecimentoDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaEstabelecimentoDto> {
 
         val resposta = cadastroService.criarEstabelecimento(req)
 

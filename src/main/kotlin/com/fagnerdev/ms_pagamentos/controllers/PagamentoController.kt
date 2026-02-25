@@ -1,8 +1,5 @@
 package com.fagnerdev.ms_pagamentos.controllers
 
-
-
-
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoAlterarStatusPagamentoDto
 import com.fagnerdev.ms_pagamentos.dtos.RequisicaoCriarPagamentoDto
 import com.fagnerdev.ms_pagamentos.dtos.RespostaEventoPagamentoDto
@@ -17,8 +14,8 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api/pagamentos")
 class PagamentoController(
-    private val pagamentoService: PagamentoService
-) {
+    private val pagamentoService: PagamentoService) {
+
 
     @PostMapping
     fun criar(@Valid @RequestBody req: RequisicaoCriarPagamentoDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaPagamentoDto> {
@@ -38,7 +35,7 @@ class PagamentoController(
 
 
     @PatchMapping("/{id}/status")
-    fun alterarStatus(@PathVariable id: UUID, @Valid @RequestBody req: RequisicaoAlterarStatusPagamentoDto): ResponseEntity<RespostaPagamentoDto> = ResponseEntity.ok(pagamentoService.alterarStatus(id, req))
+    fun alterarStatus(@PathVariable id: UUID, @Valid @RequestBody requisicaoAlterarStatusPagamentoDto: RequisicaoAlterarStatusPagamentoDto): ResponseEntity<RespostaPagamentoDto> = ResponseEntity.ok(pagamentoService.alterarStatus(id, requisicaoAlterarStatusPagamentoDto))
 
 
     @GetMapping("/{id}/linha-do-tempo")

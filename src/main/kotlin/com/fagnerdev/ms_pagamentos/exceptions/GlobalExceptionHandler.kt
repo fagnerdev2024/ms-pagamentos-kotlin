@@ -1,7 +1,7 @@
 package com.fagnerdev.ms_pagamentos.exceptions
 
 
-import com.fagnerdev.ms_pagamentos.entidades.StatusPagamento
+import com.fagnerdev.ms_pagamentos.entities.StatusPagamentoEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.core.convert.ConversionFailedException
@@ -18,12 +18,12 @@ import tools.jackson.databind.exc.InvalidFormatException
 import java.time.OffsetDateTime
 
 @RestControllerAdvice
-class ApiExceptionHandler {
+class GlobalExceptionHandler {
 
-    private val log = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
+    private val log = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
-    @ExceptionHandler(ExcecaoNaoEncontrado::class)
-    fun naoEncontrado(ex: ExcecaoNaoEncontrado, request: HttpServletRequest): ProblemDetail {
+    @ExceptionHandler(ExceptionNaoEncontrado::class)
+    fun naoEncontrado(ex: ExceptionNaoEncontrado, request: HttpServletRequest): ProblemDetail {
         val pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.message ?: "Recurso não encontrado")
         pd.title = "Não encontrado"
         pd.setProperty("path", request.requestURI)
@@ -31,8 +31,8 @@ class ApiExceptionHandler {
         return pd
     }
 
-    @ExceptionHandler(ExcecaoRegraNegocio::class)
-    fun regraNegocio(ex: ExcecaoRegraNegocio, request: HttpServletRequest): ProblemDetail {
+    @ExceptionHandler(ExceptionRegraNegocio::class)
+    fun regraNegocio(ex: ExceptionRegraNegocio, request: HttpServletRequest): ProblemDetail {
         val pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "Violação de regra de negócio")
         pd.title = "Regra de negócio"
         pd.setProperty("path", request.requestURI)
@@ -148,8 +148,8 @@ class ApiExceptionHandler {
 
 
 
-    @ExceptionHandler(TransicaoPagamentoInvalidaException::class)
-    fun transicaoInvalida(ex: TransicaoPagamentoInvalidaException, request: HttpServletRequest): ProblemDetail {
+    @ExceptionHandler(ExceptionTransicaoPagamentoInvalido::class)
+    fun transicaoInvalida(ex: ExceptionTransicaoPagamentoInvalido, request: HttpServletRequest): ProblemDetail {
         val pd = ProblemDetail.forStatus(HttpStatus.CONFLICT)
         pd.title = "Transição de status inválida"
 
@@ -168,15 +168,15 @@ class ApiExceptionHandler {
     }
 
     private fun montarMensagemTransicao(
-        atual: StatusPagamento,
-        solicitado: StatusPagamento,
-        permitidos: Set<StatusPagamento>
+        atual: StatusPagamentoEnum,
+        solicitado: StatusPagamentoEnum,
+        permitidos: Set<StatusPagamentoEnum>
     ): String {
         val pode = if (permitidos.isEmpty()) "nenhuma (estado final)" else permitidos.joinToString(", ")
 
         val explicacao = when (atual) {
-            StatusPagamento.CAPTURADO -> when (solicitado) {
-                StatusPagamento.CANCELADO ->
+            StatusPagamentoEnum.CAPTURADO -> when (solicitado) {
+                StatusPagamentoEnum.CANCELADO ->
                     "O pagamento já foi CAPTURADO (cobrança efetivada). Cancelamento só é permitido antes da captura. " +
                             "Depois de capturado, o fluxo correto é ESTORNAR."
 
@@ -184,32 +184,32 @@ class ApiExceptionHandler {
                     "O pagamento já foi CAPTURADO (cobrança efetivada). A partir daqui, o próximo passo permitido é ESTORNAR."
             }
 
-            StatusPagamento.ESTORNADO ->
+            StatusPagamentoEnum.ESTORNADO ->
                 "O pagamento já foi ESTORNADO (refund realizado). Após estorno, o pagamento é encerrado e não permite novas transições."
 
-            StatusPagamento.CANCELADO ->
+            StatusPagamentoEnum.CANCELADO ->
                 "O pagamento já foi CANCELADO antes da captura. Cancelamento é estado final e não permite novas transições."
 
-            StatusPagamento.FALHOU ->
+            StatusPagamentoEnum.FALHOU ->
                 "O pagamento está como FALHOU. Estado final: não permite continuar o fluxo."
 
-            StatusPagamento.CRIADO -> when (solicitado) {
-                StatusPagamento.CAPTURADO ->
+            StatusPagamentoEnum.CRIADO -> when (solicitado) {
+                StatusPagamentoEnum.CAPTURADO ->
                     "Não é possível CAPTURAR um pagamento em CRIADO. Fluxo correto: CRIADO -> AUTORIZADO -> CAPTURADO."
 
-                StatusPagamento.ESTORNADO ->
+                StatusPagamentoEnum.ESTORNADO ->
                     "Não é possível ESTORNAR um pagamento em CRIADO. Estorno só acontece após CAPTURA."
 
                 else ->
                     "Em CRIADO você pode AUTORIZAR, CANCELAR ou marcar como FALHOU."
             }
 
-            StatusPagamento.AUTORIZADO -> when (solicitado) {
-                StatusPagamento.ESTORNADO ->
+            StatusPagamentoEnum.AUTORIZADO -> when (solicitado) {
+                StatusPagamentoEnum.ESTORNADO ->
                     "Não é possível ESTORNAR um pagamento apenas AUTORIZADO. Estorno só acontece após CAPTURA. " +
                             "Se não vai capturar, o correto é CANCELAR."
 
-                StatusPagamento.CRIADO ->
+                StatusPagamentoEnum.CRIADO ->
                     "Não é possível voltar de AUTORIZADO para CRIADO. O fluxo é progressivo."
 
                 else ->

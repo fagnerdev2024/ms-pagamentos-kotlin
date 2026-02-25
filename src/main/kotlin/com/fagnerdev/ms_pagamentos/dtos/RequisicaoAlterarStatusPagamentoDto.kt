@@ -2,13 +2,13 @@ package com.fagnerdev.ms_pagamentos.dtos
 
 
 
-import com.fagnerdev.ms_pagamentos.entidades.StatusPagamento
+import com.fagnerdev.ms_pagamentos.entities.StatusPagamentoEnum
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
-data class RequisicaoAlterarStatusPagamento(
+data class RequisicaoAlterarStatusPagamentoDto(
     @field:NotNull(message = "status é obrigatório")
-    val status: StatusPagamento,
+    val status: StatusPagamentoEnum,
 
     @field:NotBlank(message = "mensagem é obrigatória")
     val mensagem: String

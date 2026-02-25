@@ -1,6 +1,6 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
-enum class StatusPagamento {
+enum class StatusPagamentoEnum {
     CRIADO,
     AUTORIZADO,
     CAPTURADO,

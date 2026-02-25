@@ -1,4 +1,4 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -13,7 +13,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "eventos_pagamento")
-class EventoPagamento(
+class EventoPagamentoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -23,7 +23,7 @@ class EventoPagamento(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val status: StatusPagamento,
+    val status: StatusPagamentoEnum,
 
     @Column(nullable = false)
     val mensagem: String = "",

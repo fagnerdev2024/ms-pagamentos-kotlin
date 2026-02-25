@@ -3,12 +3,12 @@ package com.fagnerdev.ms_pagamentos.dtos
 
 
 
-import com.fagnerdev.ms_pagamentos.entidades.StatusPagamento
+import com.fagnerdev.ms_pagamentos.entities.StatusPagamentoEnum
 import java.time.OffsetDateTime
 
-data class RespostaEventoPagamento(
+data class RespostaEventoPagamentoDto(
     val id: Long,
-    val status: StatusPagamento,
+    val status: StatusPagamentoEnum,
     val mensagem: String,
     val criadoEm: OffsetDateTime
 )

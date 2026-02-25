@@ -7,9 +7,13 @@ server:
     include-binding-errors: never
 
 spring:
+  output:
+    ansi:
+      enabled: always   # 🔥 ativa console colorido
+
   datasource:
     url: jdbc:h2:mem:pagamentosdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
-    driverClassName: org.h2.Driver
+    driver-class-name: org.h2.Driver
     username: sa
     password:
 
@@ -30,7 +34,3 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-
-
-
-

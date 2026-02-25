@@ -1,11 +1,11 @@
-package com.fagnerdev.ms_pagamentos.entidades
+package com.fagnerdev.ms_pagamentos.entities
 
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "clientes")
-class Clientes(
+class ClienteEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,

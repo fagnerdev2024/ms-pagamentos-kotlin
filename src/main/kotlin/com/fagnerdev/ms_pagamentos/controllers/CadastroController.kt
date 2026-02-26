@@ -18,27 +18,21 @@ class CadastroController(
 
     @PostMapping("/clientes")
     fun criarCliente(@Valid @RequestBody req: RequisicaoCriarClienteDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaClienteDto> {
-
         val resposta = cadastroService.criarCliente(req)
-
         val location = uriBuilder
             .path("/api/cadastros/clientes/{id}")
             .buildAndExpand(resposta.id)
             .toUri()
-
         return ResponseEntity.created(location).body(resposta)
     }
 
     @PostMapping("/estabelecimentos")
     fun criarEstabelecimento(@Valid @RequestBody req: RequisicaoCriarEstabelecimentoDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaEstabelecimentoDto> {
-
         val resposta = cadastroService.criarEstabelecimento(req)
-
         val location = uriBuilder
             .path("/api/cadastros/estabelecimentos/{id}")
             .buildAndExpand(resposta.id)
             .toUri()
-
         return ResponseEntity.created(location).body(resposta)
     }
 }

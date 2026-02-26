@@ -20,12 +20,10 @@ class PagamentoController(
     @PostMapping
     fun criar(@Valid @RequestBody req: RequisicaoCriarPagamentoDto, uriBuilder: UriComponentsBuilder): ResponseEntity<RespostaPagamentoDto> {
         val resposta = pagamentoService.criar(req)
-
         val location = uriBuilder
             .path("/api/pagamentos/{id}")
             .buildAndExpand(resposta.id)
             .toUri()
-
         return ResponseEntity.created(location).body(resposta)
     }
 

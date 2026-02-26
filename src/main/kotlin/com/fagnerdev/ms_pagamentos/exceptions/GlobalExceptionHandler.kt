@@ -1,6 +1,5 @@
 package com.fagnerdev.ms_pagamentos.exceptions
 
-
 import com.fagnerdev.ms_pagamentos.entities.StatusPagamentoEnum
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
@@ -23,30 +22,30 @@ class GlobalExceptionHandler {
     private val log = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(ExceptionNaoEncontrado::class)
-    fun naoEncontrado(ex: ExceptionNaoEncontrado, request: HttpServletRequest): ProblemDetail {
-        val pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.message ?: "Recurso não encontrado")
-        pd.title = "Não encontrado"
-        pd.setProperty("path", request.requestURI)
-        pd.setProperty("timestamp", OffsetDateTime.now())
-        return pd
+    fun naoEncontrado(ex: ExceptionNaoEncontrado, httpServletRequest: HttpServletRequest): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.message ?: "Recurso não encontrado")
+        problemDetail.title = "Não encontrado"
+        problemDetail.setProperty("path", httpServletRequest.requestURI)
+        problemDetail.setProperty("timestamp", OffsetDateTime.now())
+        return problemDetail
     }
 
     @ExceptionHandler(ExceptionRegraNegocio::class)
-    fun regraNegocio(ex: ExceptionRegraNegocio, request: HttpServletRequest): ProblemDetail {
-        val pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "Violação de regra de negócio")
-        pd.title = "Regra de negócio"
-        pd.setProperty("path", request.requestURI)
-        pd.setProperty("timestamp", OffsetDateTime.now())
-        return pd
+    fun regraNegocio(ex: ExceptionRegraNegocio, httpServletRequest: HttpServletRequest): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.message ?: "Violação de regra de negócio")
+        problemDetail.title = "Regra de negócio"
+        problemDetail.setProperty("path", httpServletRequest.requestURI)
+        problemDetail.setProperty("timestamp", OffsetDateTime.now())
+        return problemDetail
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun validacao(ex: MethodArgumentNotValidException, request: HttpServletRequest): ProblemDetail {
-        val pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
-        pd.title = "Erro de validação"
-        pd.detail = "Um ou mais campos estão inválidos"
-        pd.setProperty("path", request.requestURI)
-        pd.setProperty("timestamp", OffsetDateTime.now())
+    fun validacao(ex: MethodArgumentNotValidException, httpServletRequest: HttpServletRequest): ProblemDetail {
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST)
+        problemDetail.title = "Erro de validação"
+        problemDetail.detail = "Um ou mais campos estão inválidos"
+        problemDetail.setProperty("path", httpServletRequest.requestURI)
+        problemDetail.setProperty("timestamp", OffsetDateTime.now())
 
         val erros = ex.bindingResult.allErrors.map { err ->
             val fe = err as? FieldError
@@ -55,8 +54,8 @@ class GlobalExceptionHandler {
                 "mensagem" to (err.defaultMessage ?: "inválido")
             )
         }
-        pd.setProperty("erros", erros)
-        return pd
+        problemDetail.setProperty("erros", erros)
+        return problemDetail
     }
 
     /**
@@ -64,16 +63,15 @@ class GlobalExceptionHandler {
      * Importante: não vaza SQL/stacktrace pro cliente.
      */
     @ExceptionHandler(DataIntegrityViolationException::class)
-    fun integridade(ex: DataIntegrityViolationException, request: HttpServletRequest): ProblemDetail {
-        // Log completo fica no servidor
-        log.warn("Violação de integridade em {}: {}", request.requestURI, ex.message, ex)
+    fun integridade(ex: DataIntegrityViolationException, httpServletRequest: HttpServletRequest): ProblemDetail {
+        log.warn("Violação de integridade em {}: {}", httpServletRequest.requestURI, ex.message, ex)
 
-        val pd = ProblemDetail.forStatus(HttpStatus.CONFLICT)
-        pd.title = "Conflito de dados"
-        pd.detail = "Não foi possível concluir a operação por conflito de dados (duplicidade ou restrição do banco)."
-        pd.setProperty("path", request.requestURI)
-        pd.setProperty("timestamp", OffsetDateTime.now())
-        return pd
+        val problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT)
+        problemDetail.title = "Conflito de dados"
+        problemDetail.detail = "Não foi possível concluir a operação por conflito de dados (duplicidade ou restrição do banco)."
+        problemDetail.setProperty("path", httpServletRequest.requestURI)
+        problemDetail.setProperty("timestamp", OffsetDateTime.now())
+        return problemDetail
     }
 
     /**
